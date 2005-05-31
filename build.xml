@@ -1,0 +1,72 @@
+<project name="CommandBot" default="dist">
+
+    <target name="init">
+        <property name="project.version" value="0.2"/>
+        <path id="compile-class-path">
+            <fileset dir="lib"/>
+        </path>
+    </target>
+
+    <target name="compile" depends="init" description="Compiles the classes">
+        <mkdir dir="build/classes"/>
+        <javac srcdir="src" destdir="build/classes" classpathref="compile-class-path"
+               source="1.5" target="1.5"/>
+    </target>
+
+    <target name="jar" depends="compile" description="Creates the JAR file">
+        <mkdir dir="build/lib"/>
+
+        <property name="CommandBot.manifest.file" value="build/lib/CommandBot.mf"/>
+
+        <manifest file="${CommandBot.manifest.file}">
+            <attribute name="Main-Class" value="org.trypticon.commandbot.Main"></attribute>
+            <attribute name="Class-Path" value="lib/jso-full.jar
+                                                lib/commons-collections-3.1.jar
+                                                lib/commons-lang-2.0.jar
+                                                lib/commons-logging.jar
+                                                lib/jdom.jar"/>
+        </manifest>
+
+        <jar jarfile="build/lib/${ant.project.name}.jar" manifest="${CommandBot.manifest.file}">
+            <fileset dir="build/classes"/>
+        </jar>
+    </target>
+
+    <target name="javadoc" depends="init" description="Creates the JavaDoc documentation">
+        <mkdir dir="build/javadoc"/>
+        <javadoc sourcepath="src" destdir="build/javadoc" classpathref="compile-class-path"
+                 packagenames="org.trypticon.xmpp.*" source="1.5"/>
+    </target>
+
+    <target name="dist" depends="jar, javadoc" description="Creates the distribution zip file">
+        <property name="dist.base" value="build/dist/${ant.project.name}-${project.version}"/>
+        <mkdir dir="${dist.base}"/>
+
+        <copy todir="${dist.base}">
+            <fileset dir=".">
+                <include name="lib/*.jar"/>
+                <include name="docs/**"/>
+                <include name="src/**"/>
+                <include name="build.xml"/>
+            </fileset>
+        </copy>
+
+        <copy file="conf/bot-config-dist.xml" tofile="${dist.base}/conf/bot-config.xml"/>
+
+        <copy todir="${dist.base}/docs/api">
+            <fileset dir="build/javadoc"/>
+        </copy>
+
+        <copy todir="${dist.base}">
+            <fileset dir="build/lib" includes="*.jar"/>
+        </copy>
+
+        <zip zipfile="build/dist/${ant.project.name}-${project.version}.zip">
+            <fileset dir="build/dist" includes="${ant.project.name}-${project.version}/**"/>
+        </zip>
+    </target>
+
+    <target name="clean" description="Cleans all generated files">
+        <delete dir="build"/>
+    </target>
+</project>

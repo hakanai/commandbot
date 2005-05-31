@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bot>
+
+    <connection>
+        <jid>username@server/resource</jid>
+        <password>password</password>
+
+        <!-- Overrides:
+        <tls>true</tls>
+        <hostname>jabber.org.au</hostname>
+        <port>5223</port>
+        -->
+    </connection>
+
+    <commands>
+        <command classname="examples.CalculatorCommand">
+            <config/>
+        </command>
+    </commands>
+
+</bot>
