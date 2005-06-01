@@ -30,13 +30,14 @@ import org.trypticon.xmpp.logging.LoggingStreamStatusListener;
 import org.trypticon.xmpp.util.FeatureNotImplementedHandler;
 import org.trypticon.xmpp.util.FirstPacketListenerRelay;
 import org.trypticon.xmpp.version.VersionQueryHandler;
+import org.trypticon.commandbot.conversation.ThreadManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jabberstudio.jso.event.PacketEvent;
 import org.jabberstudio.jso.x.commands.CommandQuery;
 import org.jabberstudio.jso.x.disco.DiscoInfoQuery;
-import org.jdom.Element;;
+import org.jdom.Element;
 
 /**
  * A simple XMPP bot.
@@ -101,7 +102,7 @@ public class CommandBot extends BaseBot
     }
 
     /**
-     * Attach listeners to the bot.  Default implementation does nothing.
+     * Attach listeners to the bot.  Subclasses should remember to call this method.
      */
     protected void attachListeners()
     {
@@ -118,6 +119,10 @@ public class CommandBot extends BaseBot
         queryRelay.addPacketListener(commandHandler);
         queryRelay.addPacketListener(new FeatureNotImplementedHandler());
         getStream().addPacketListener(PacketEvent.RECEIVED, queryRelay);
+
+        // Attach the conversation handler.
+        ThreadManager threadManager = new ThreadManager();
+        getStream().addPacketListener(PacketEvent.RECEIVED, threadManager);
     }
 
     /**
