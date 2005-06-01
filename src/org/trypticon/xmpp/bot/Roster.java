@@ -16,25 +16,19 @@
 
 package org.trypticon.xmpp.bot;
 
+import org.jabberstudio.jso.Presence;
+import org.jabberstudio.jso.JID;
+
 /**
- * Interface for an XMPP bot.
+ * Interface representing the bot's roster.
  */
-public interface Bot
+public interface Roster
 {
     /**
-     * Starts the bot.
-     */
-    void start();
-
-    /**
-     * Stops the bot.
-     */
-    void stop();
-
-    /**
-     * Gets a reference to the roster.
+     * Gets the highest priority presence for a JID.
      *
-     * @return the reference to the roster.
+     * @param jid the JID
+     * @return the highest priority presence for that JID, or <code>null</code> if it is not available.
      */
-    Roster getRoster();
+    Presence getPresence(JID jid);
 }

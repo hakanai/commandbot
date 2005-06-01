@@ -77,6 +77,11 @@ public class BaseBot implements Bot
     private Stream stream;
 
     /**
+     * The roster.
+     */
+    private BaseRoster roster;
+
+    /**
      * Constructs the bot.
      *
      * @param config the configuration for the bot.
@@ -84,6 +89,8 @@ public class BaseBot implements Bot
     public BaseBot(Element config)
     {
         this.config = config;
+
+        this.roster = new BaseRoster();
     }
 
     /**
@@ -110,10 +117,21 @@ public class BaseBot implements Bot
     }
 
     /**
-     * Attach listeners to the bot.  Default implementation does nothing.
+     * Gets a reference to the roster.
+     *
+     * @return the reference to the roster.
+     */
+    public Roster getRoster()
+    {
+        return roster;
+    }
+
+    /**
+     * Attach listeners to the bot.  Subclasses should remember to call this method.
      */
     protected void attachListeners()
     {
+        roster.attach(stream);
     }
 
     /**
