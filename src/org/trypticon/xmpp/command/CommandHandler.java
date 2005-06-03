@@ -19,7 +19,8 @@ package org.trypticon.xmpp.command;
 import org.trypticon.xmpp.disco.Discoverable;
 
 import org.jabberstudio.jso.x.commands.CommandQuery;
-import org.jdom.Element;;
+import org.jabberstudio.jso.util.PacketException;
+import org.jdom.Element;
 
 /**
  * A handler for a single command.
@@ -45,6 +46,7 @@ public interface CommandHandler extends Discoverable
      *
      * @param request  the request query.
      * @param response the response query.
+     * @throws PacketException if an error occurs handling the command.
      */
-    void handleCommand(CommandQuery request, CommandQuery response);
+    void handleCommand(CommandQuery request, CommandQuery response) throws PacketException;
 }
