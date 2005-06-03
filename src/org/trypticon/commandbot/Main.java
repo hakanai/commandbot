@@ -25,7 +25,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.jdom.Element;
-import org.jdom.input.SAXBuilder;;
+import org.jdom.input.SAXBuilder;
 
 /**
  * Main class.  Does nothing but create and launch a {@link Bot}.
@@ -38,13 +38,13 @@ public class Main
     private static final Log log;
 
     static
-            {
-                // Bootstrap the logging.
-                Appender appender = new ConsoleAppender(new SimpleLayout(), ConsoleAppender.SYSTEM_ERR);
-                Logger.getRootLogger().addAppender(appender);
+    {
+        // Bootstrap the logging.
+        Appender appender = new ConsoleAppender(new SimpleLayout(), ConsoleAppender.SYSTEM_ERR);
+        Logger.getRootLogger().addAppender(appender);
 
-                log = LogFactory.getLog(Main.class);
-            }
+        log = LogFactory.getLog(Main.class);
+    }
 
     /**
      * Main method.

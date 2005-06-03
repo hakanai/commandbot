@@ -31,7 +31,7 @@ import org.jabberstudio.jso.PacketError;
 import org.jabberstudio.jso.util.IdentityGenerator;
 import org.jabberstudio.jso.util.PacketException;
 import org.jabberstudio.jso.x.commands.CommandQuery;
-import org.jabberstudio.jso.x.disco.DiscoInfoQuery;;
+import org.jabberstudio.jso.x.disco.DiscoInfoQuery;
 
 /**
  * A packet listener which handles Command queries.
