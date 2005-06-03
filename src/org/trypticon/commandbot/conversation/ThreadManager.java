@@ -12,7 +12,6 @@ import org.jabberstudio.jso.event.PacketListener;
 import org.jabberstudio.jso.event.PacketEvent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.aitools.programd.util.DeveloperError;
 import examples.EchoTopic;
 import examples.ProgramDTopic;
 
@@ -47,9 +46,9 @@ public class ThreadManager implements PacketListener
         try
         {
             // By default, everything is ignored.  TODO: Figure out how to build up the topic map... probably from configuration.
-            //topicMap.put("", new IgnoreAllTopic());
+            topicMap.put("", new IgnoreAllTopic());
             //topicMap.put("", new EchoTopic());
-            topicMap.put("", new ProgramDTopic());
+            //topicMap.put("", new ProgramDTopic());
         }
         catch (Throwable t)
         {
