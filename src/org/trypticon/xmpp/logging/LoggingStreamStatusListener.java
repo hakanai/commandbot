@@ -39,6 +39,6 @@ public class LoggingStreamStatusListener implements StreamStatusListener
     public void statusChanged(StreamStatusEvent event)
     {
         String direction = event.getContext().isInbound() ? "Inbound" : "Outbound";
-        log.info(direction + " : " + event.getPreviousStatus() + " -> " + event.getNextStatus());
+        log.debug(direction + " : " + event.getPreviousStatus() + " -> " + event.getNextStatus());
     }
 }

@@ -40,7 +40,7 @@ public class LoggingPacketListener implements PacketListener
     public void packetTransferred(PacketEvent event)
     {
         String direction = event.getContext().isInbound() ? "Inbound" : "Outbound";
-        log.info(direction + " : " +
-                JSO.getInstance().createXMLExporter(event.getContext()).write(event.getData()));
+        log.debug(direction + " : " +
+                  JSO.getInstance().createXMLExporter(event.getContext()).write(event.getData()));
     }
 }
