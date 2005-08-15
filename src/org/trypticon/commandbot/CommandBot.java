@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.trypticon.xmpp.bot.BaseBot;
-import org.trypticon.xmpp.command.CommandHandler;
 import org.trypticon.xmpp.command.CommandQueryHandler;
 import org.trypticon.xmpp.disco.DiscoQueryHandler;
 import org.trypticon.xmpp.disco.Discoverable;
@@ -30,7 +29,7 @@ import org.trypticon.xmpp.logging.LoggingStreamStatusListener;
 import org.trypticon.xmpp.util.FeatureNotImplementedHandler;
 import org.trypticon.xmpp.util.FirstPacketListenerRelay;
 import org.trypticon.xmpp.version.VersionQueryHandler;
-import org.trypticon.commandbot.conversation.ThreadManager;
+import org.trypticon.commandbot.conversation.ConversationHandler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,6 +70,11 @@ public class CommandBot extends BaseBot
     private CommandQueryHandler commandHandler;
 
     /**
+     * The handler for direct chat conversation.
+     */
+    private ConversationHandler conversationHandler;
+
+    /**
      * Constructs the bot.
      *
      * @param config the configuration for the bot.
@@ -80,25 +84,12 @@ public class CommandBot extends BaseBot
         super(config);
 
         discoHandler = new DiscoQueryHandler(this);
+
         commandHandler = new CommandQueryHandler(discoHandler);
+        commandHandler.configure(config.getChild("commands"));
 
-        Element commandsElement = config.getChild("commands");
-        for (Element commandElement : (List<Element>) commandsElement.getChildren("command"))
-        {
-            String commandClassName = commandElement.getAttributeValue("classname");
-
-            try
-            {
-                CommandHandler handler = (CommandHandler) Class.forName(commandClassName).newInstance();
-                handler.configure(commandElement.getChild("config"));
-
-                commandHandler.addCommand(handler);
-            }
-            catch (Throwable t)
-            {
-                log.error("Error loading command class " + commandClassName, t);
-            }
-        }
+        conversationHandler = new ConversationHandler();
+        conversationHandler.configure(config.getChild("conversation"));
     }
 
     /**
@@ -121,8 +112,7 @@ public class CommandBot extends BaseBot
         getStream().addPacketListener(PacketEvent.RECEIVED, queryRelay);
 
         // Attach the conversation handler.
-        ThreadManager threadManager = new ThreadManager();
-        getStream().addPacketListener(PacketEvent.RECEIVED, threadManager);
+        getStream().addPacketListener(PacketEvent.RECEIVED, conversationHandler);
     }
 
     /**

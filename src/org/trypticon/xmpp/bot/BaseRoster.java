@@ -24,6 +24,8 @@ import org.jabberstudio.jso.JID;
 import org.jabberstudio.jso.Stream;
 import org.jabberstudio.jso.event.PacketListener;
 import org.jabberstudio.jso.event.PacketEvent;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 /**
  * Basic implementation of a roster.
@@ -31,9 +33,24 @@ import org.jabberstudio.jso.event.PacketEvent;
 public class BaseRoster implements Roster
 {
     /**
+     * Logging.
+     */
+    private static final Log log = LogFactory.getLog(BaseRoster.class);
+
+    /**
      * A map of bare JIDs to maps of resource names to presence.
      */
     private Map<JID, Map<String, Presence>> presenceMap = new HashMap<JID, Map<String, Presence>>();
+
+    /**
+     * The current stream we're attached to.
+     */
+    private Stream stream;
+
+    /**
+     * The handler which we'll attach to the stream.
+     */
+    private PresenceHandler presenceHandler = new PresenceHandler();
 
     /**
      * Gets the highest priority presence for a JID.
@@ -64,18 +81,31 @@ public class BaseRoster implements Roster
      * Attaches the roster to a stream, resetting all state.
      *
      * @param stream the stream.
+     * @throws IllegalArgumentException if <code>stream</code> is null.
      */
     protected void attach(Stream stream)
     {
-        // TODO: Detach any previous stream.
+        log.debug("Attaching to stream " + stream);
+
+        if (stream == null)
+        {
+            throw new IllegalArgumentException("The roster can't attach to a null stream");
+        }
+
+        // Detach the previous handler if need be.
+        if (this.stream != null)
+        {
+            this.stream.removePacketListener(PacketEvent.RECEIVED, presenceHandler);
+        }
 
         // TODO: Fetch the actual roster.
 
         // Any presence we previously held is invalidated now.
         presenceMap.clear();
 
-        // Receive updates.
-        stream.addPacketListener(PacketEvent.RECEIVED, new PresenceHandler());
+        // Attach the handler to the new stream, which finally becomes the current stream.
+        stream.addPacketListener(PacketEvent.RECEIVED, presenceHandler);
+        this.stream = stream;
     }
 
     /**

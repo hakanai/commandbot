@@ -2,13 +2,14 @@ package examples;
 
 import org.trypticon.commandbot.conversation.Topic;
 import org.trypticon.commandbot.conversation.Conversation;
+import org.trypticon.commandbot.conversation.AbstractTopic;
 
 import org.jabberstudio.jso.Message;
 
 /**
  * A simple topic which relays everything back to the user.
  */
-public class EchoTopic implements Topic
+public class EchoTopic extends AbstractTopic
 {
     /**
      * Handles a message for this topic.

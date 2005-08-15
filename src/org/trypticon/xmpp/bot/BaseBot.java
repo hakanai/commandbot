@@ -248,9 +248,12 @@ public class BaseBot implements Bot
         // not send us any messages which were sent to the bare JID.
         try
         {
+            String priorityString = connectionElement.getChildTextTrim("priority");
+            int priority = (priorityString == null) ? -1 : Integer.parseInt(priorityString);
+
             Presence presence = (Presence)
                     stream.getDataFactory().createPacketNode(new NSI("presence", Utilities.CLIENT_NAMESPACE));
-            presence.setPriority(-1);
+            presence.setPriority(priority);
             stream.send(presence);
         }
         catch (StreamException e)
@@ -361,14 +364,30 @@ public class BaseBot implements Bot
         {
             if (stream != null)
             {
-                stream.close();
-                stream.disconnect();
+                if (stream.getCurrentStatus() == Stream.OPENED)
+                {
+                    stream.close();
+                }
+
+                if (stream.getCurrentStatus() == Stream.CONNECTED)
+                {
+                    stream.disconnect();
+                }
             }
         }
         catch (StreamException e)
         {
             log.warn("Failed to close and disconnect, stream is probably already closed", e);
         }
+    }
+
+    /**
+     * Tests if the bot is connected.
+     * @return <code>true</code> if the bot is connected, <code>false</code> otherwise.
+     */
+    public boolean isConnected()
+    {
+        return (stream != null && stream.getCurrentStatus() == Stream.OPENED);
     }
 
     /**
@@ -397,7 +416,7 @@ public class BaseBot implements Bot
                     {
                         try
                         {
-                            log.info("Sleeping for a while before trying again.");
+                            log.warn("Failed to connect.  Sleeping for a while before trying again.");
                             Thread.sleep(20000);
                             continue;
                         }
@@ -432,6 +451,10 @@ public class BaseBot implements Bot
                             break;
                         }
                     }
+                }
+                catch (Throwable t)
+                {
+                    log.error("Unexpected error from reconnection loop, reconnecting.", t);
                 }
                 finally
                 {

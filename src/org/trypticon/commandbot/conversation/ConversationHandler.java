@@ -2,28 +2,27 @@ package org.trypticon.commandbot.conversation;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 
 import org.jabberstudio.jso.JID;
 import org.jabberstudio.jso.Message;
-import org.jabberstudio.jso.Stream;
 import org.jabberstudio.jso.PacketRouter;
 import org.jabberstudio.jso.util.Utilities;
 import org.jabberstudio.jso.event.PacketListener;
 import org.jabberstudio.jso.event.PacketEvent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import examples.EchoTopic;
-import examples.ProgramDTopic;
+import org.jdom.Element;
 
 /**
  * A class which maps sender JIDs and thread IDs from messages to a {@link Conversation}.
  */
-public class ThreadManager implements PacketListener
+public class ConversationHandler implements PacketListener
 {
     /**
      * Log.
      */
-    private static final Log log = LogFactory.getLog(ThreadManager.class);
+    private static final Log log = LogFactory.getLog(ConversationHandler.class);
 
     /**
      * The map of topics.
@@ -38,23 +37,44 @@ public class ThreadManager implements PacketListener
     /**
      * Default constructor.
      */
-    public ThreadManager()
+    public ConversationHandler()
     {
         topicMap = new HashMap<String, Topic>();
         conversationMap = new HashMap<PeerThreadPair, Conversation>();
+    }
 
-        try
+    /**
+     * Configures the conversation handler.
+     *
+     * @param config the XML configuration element containing the topics.
+     */
+    public void configure(Element config)
+    {
+        topicMap.clear();
+
+        if (config != null)
         {
-            // By default, everything is ignored.  TODO: Figure out how to build up the topic map... probably from configuration.
-            topicMap.put("", new IgnoreAllTopic());
-            //topicMap.put("", new EchoTopic());
-            //topicMap.put("", new ProgramDTopic());
-        }
-        catch (Throwable t)
-        {
-            log.error("Unexpected error creating conversation topic of type ProgramD", t);
-            // TODO: Better handling after it works.
-            System.exit(1);
+            for (Element commandElement : (List<Element>) config.getChildren("topic"))
+            {
+                String topicClassName = commandElement.getAttributeValue("classname");
+
+                try
+                {
+                    Topic topic = (Topic) Class.forName(topicClassName).newInstance();
+                    topic.configure(commandElement.getChild("config"));
+
+                    topicMap.put(topicClassName, topic);
+
+                    if ("true".equals(commandElement.getAttributeValue("default")))
+                    {
+                        topicMap.put(null, topic);
+                    }
+                }
+                catch (Throwable t)
+                {
+                    log.error("Error loading command class " + topicClassName, t);
+                }
+            }
         }
     }
 
@@ -88,7 +108,17 @@ public class ThreadManager implements PacketListener
         PeerThreadPair key = new PeerThreadPair(message.getFrom(), message.getThread());
         Conversation conversation = conversationMap.get(key);
 
-        // TODO: Logic to look up the bare JID in case a conversation with the bare JID exists, and replace with the full one.
+        // If the conversation wasn't found, try searching for the version with the bare JID.
+        if (conversation == null)
+        {
+            PeerThreadPair newKey = new PeerThreadPair(message.getFrom().toBareJID(), message.getThread());
+            conversation = conversationMap.get(newKey);
+
+            // If this was found, this becomes the new key.
+            conversationMap.put(newKey, conversation);
+            conversationMap.remove(key);
+            key = newKey;
+        }
 
         if (conversation == null)
         {

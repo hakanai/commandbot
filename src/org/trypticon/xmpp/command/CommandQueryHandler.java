@@ -32,13 +32,21 @@ import org.jabberstudio.jso.util.IdentityGenerator;
 import org.jabberstudio.jso.util.PacketException;
 import org.jabberstudio.jso.x.commands.CommandQuery;
 import org.jabberstudio.jso.x.disco.DiscoInfoQuery;
+import org.jdom.Element;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A packet listener which handles Command queries.
  */
 public class CommandQueryHandler extends AbstractQueryHandler
-        implements Discoverable
+    implements Discoverable
 {
+    /**
+     * Logger.
+     */
+    private static final Log log = LogFactory.getLog(CommandQueryHandler.class);
+
     /**
      * A map of nodes to commands.
      */
@@ -58,6 +66,36 @@ public class CommandQueryHandler extends AbstractQueryHandler
     {
         this.discoHandler = discoHandler;
         discoHandler.addDiscoverable(this);
+    }
+
+    /**
+     * Configures the command query handler.
+     *
+     * @param config the XML configuration element containing the commands.
+     */
+    public void configure(Element config)
+    {
+        commandMap.clear();
+
+        if (config != null)
+        {
+            for (Element commandElement : (List<Element>) config.getChildren("command"))
+            {
+                String commandClassName = commandElement.getAttributeValue("classname");
+
+                try
+                {
+                    CommandHandler handler = (CommandHandler) Class.forName(commandClassName).newInstance();
+                    handler.configure(commandElement.getChild("config"));
+
+                    addCommand(handler);
+                }
+                catch (Throwable t)
+                {
+                    log.error("Error loading command class " + commandClassName, t);
+                }
+            }
+        }
     }
 
     /**

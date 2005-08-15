@@ -63,7 +63,7 @@ public class Conversation
         this.thread = thread;
         this.topicMap = topicMap;
 
-        changeTopic("");
+        resetTopic();
     }
 
     /**
@@ -75,13 +75,7 @@ public class Conversation
      */
     public boolean handle(Message message)
     {
-        log.debug("Handling message for conversation: "  + message);
-
-        boolean result = currentTopic.handle(this, message);
-
-        // TODO: Stack the topics so that it can return to the "next topic up"?  Or handle that in the topics by changing topic to ""?
-
-        return result;
+        return currentTopic.handle(this, message);
     }
 
     /**
@@ -90,7 +84,7 @@ public class Conversation
      * @param name the name of the new topic.
      * @throws IllegalArgumentException if the topic with the given name does not exist.
      */
-    public void changeTopic(String name)
+    public void changeTopicByName(String name)
     {
         Topic newTopic = topicMap.get(name);
 
@@ -100,6 +94,14 @@ public class Conversation
         }
 
         currentTopic = newTopic;
+    }
+
+    /**
+     * Resets the topic to the default.
+     */
+    public void resetTopic()
+    {
+        changeTopicByName(null);
     }
 
     /**

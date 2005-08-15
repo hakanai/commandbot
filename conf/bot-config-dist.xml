@@ -6,6 +6,7 @@
         <password>password</password>
 
         <!-- Overrides:
+        <priority>1</priority>
         <tls>true</tls>
         <hostname>jabber.org.au</hostname>
         <port>5223</port>

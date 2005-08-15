@@ -2,7 +2,7 @@
 <bot>
 
     <connection>
-        <jid>trejkaz@jabber.zim.net.au/commandbot</jid>
+        <jid>trejkaz@jabber.org.au/commandbot</jid>
         <password>bungh0le</password>
 
         <!-- Overrides:
@@ -17,4 +17,10 @@
             <config/>
         </command>
     </commands>
+
+    <conversation>
+        <topic classname="examples.EchoTopic" default="true">
+            <config/>
+        </topic>
+    </conversation>
 </bot>

@@ -5,7 +5,7 @@ import org.jabberstudio.jso.Message;
 /**
  * A basic topic which treats all messages at the end of the conversation.
  */
-public class IgnoreAllTopic implements Topic
+public class IgnoreAllTopic extends AbstractTopic
 {
     /**
      * Handles a message for this topic.
