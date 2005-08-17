@@ -1,7 +1,7 @@
 <project name="CommandBot" default="dist">
 
     <target name="init">
-        <property name="project.version" value="0.2"/>
+        <property name="project.version" value="0.3"/>
         <path id="compile-class-path">
             <fileset dir="lib"/>
         </path>
