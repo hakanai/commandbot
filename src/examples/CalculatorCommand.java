@@ -21,6 +21,7 @@ import org.trypticon.xmpp.command.AbstractCommandHandler;
 import net.outer_planes.jso.JSO;
 import org.jabberstudio.jso.StreamDataFactory;
 import org.jabberstudio.jso.x.commands.CommandQuery;
+import org.jabberstudio.jso.x.commands.CommandNote;
 import org.jabberstudio.jso.x.disco.DiscoInfoQuery;
 import org.jabberstudio.jso.x.xdata.XDataField;
 import org.jabberstudio.jso.x.xdata.XDataForm;
@@ -61,6 +62,9 @@ public class CalculatorCommand extends AbstractCommandHandler
             double sum = param1 + param2;
 
             // TODO: Use command notes, when Psi starts supporting them.
+//            response.addNote(CommandNote.INFO, "The result is " + sum);
+//            response.clearPayload();
+
             XDataForm resultForm = (XDataForm) form.getDataFactory().createExtensionNode(XDataForm.NAME);
             resultForm.setInstructions("The result is " + sum);
             response.setPayload(resultForm);
